@@ -703,4 +703,40 @@ export async function addNetworkTypeNode(
     console.error(`Error adding network type node: ${error.message}`);
     return undefined;
   }
+
+  
 }
+
+export async function addNetworkTypeZone(
+  parentId: string,
+  contextId: string,
+  nodeName: string,
+  relationName: string,
+  relationType: string
+  
+): Promise<SpinalNode<any> | undefined> {
+  try {
+    // Créer le nœud avec le nom et le type "network"
+    const nodeId = SpinalGraphService.createNode({ name: nodeName, type: "network", subtype: "zone"});
+    if (!nodeId) {
+      throw new Error("Failed to create the node.");
+    }
+
+    // Ajouter le nœud comme enfant du parent dans le contexte donné
+    const result = await SpinalGraphService.addChildInContext(
+      parentId,
+      nodeId,
+      contextId,
+      relationName,
+      relationType
+    );
+
+    return result;
+  } catch (error) {
+    console.error(`Error adding network type node: ${error.message}`);
+    return undefined;
+  }
+
+  
+}
+

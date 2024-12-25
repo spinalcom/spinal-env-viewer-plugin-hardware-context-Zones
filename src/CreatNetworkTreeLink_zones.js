@@ -5,7 +5,7 @@ import { attributeService } from "spinal-env-viewer-plugin-documentation-service
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 import { SITE_RELATION, BUILDING_RELATION, FLOOR_RELATION, FLOOR_TYPE } from "spinal-env-viewer-context-geographic-service";
 import { NetworkTreeService } from "spinal-env-viewer-plugin-network-tree-service";
-import { FindBimGateways, FindBMSGateways, matchBIMandBMSGateways,getZones,getBUSList,getZoneAttribute,getBUSList,getGrpInfo,searchGrpsForZone,addNetworkTypeNode} from "./test";
+import { FindBimGateways, FindBMSGateways, matchBIMandBMSGateways,getZones,getBUSList,getZoneAttribute,getBUSList,getGrpInfo,searchGrpsForZone,addNetworkTypeNode,addNetworkTypeZone} from "./test";
 import{Gatway_BIM_Context, Gatway_Bms_Context} from "../.config.json"
 
 const {
@@ -118,7 +118,7 @@ export class CreatNetworkTreeLink_zones extends SpinalContextApp {
       const grpInfo = await getGrpInfo(busList);
   
       for (const zone of zones) {
-        const createdZoneNode = await addNetworkTypeNode(
+        const createdZoneNode = await addNetworkTypeZone(
           addedBimNode.info.id.get(),
           contextId,
           zone.name.get(),
