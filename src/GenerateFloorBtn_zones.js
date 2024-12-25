@@ -6,7 +6,7 @@ import { SpinalGraphService } from "spinal-env-viewer-graph-service"
 import { SITE_RELATION, BUILDING_RELATION, FLOOR_RELATION, FLOOR_TYPE } from "spinal-env-viewer-context-geographic-service"
 import { NetworkTreeService } from "spinal-env-viewer-plugin-network-tree-service"
 
-export class GenerateFloorBtn extends SpinalContextApp {
+export class GenerateFloorBtn_zones extends SpinalContextApp {
   constructor() {
     super('Generate Floor Network', 'Spinal CDE description', {
       icon: 'account_tree',
@@ -24,7 +24,7 @@ export class GenerateFloorBtn extends SpinalContextApp {
     const attributes = await attributeService.getAttrBySchema(selectedNode, {
       "Hardware Context": ["Hardware Context Type"]
     })
-    if (attributes["Hardware Context"]?.["Hardware Context Type"] !== "Position_Luminaire")
+    if (attributes["Hardware Context"]?.["Hardware Context Type"] !== "zone")
       return -1;
     return true;
   }

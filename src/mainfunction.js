@@ -6,7 +6,7 @@ import { getFloorEquipments, getFloorPos, findEquForPosition, addPositionToNetwo
 
 
 
-export async function hardwarecontexteGeneration(PosContextName, PosCategoryName, GroupPositions, equContext, equCategory, GroupEquipement, distance,option) {
+/*export async function hardwarecontexteGeneration(PosContextName, PosCategoryName, GroupPositions, equContext, equCategory, GroupEquipement, distance,option) {
 
     const PositionContext = PosContextName;
     const PositionCategory = PosCategoryName;
@@ -38,13 +38,13 @@ export async function hardwarecontexteGeneration(PosContextName, PosCategoryName
         try {
            
            
-          //await addPositionToNetwork(pos.Position, option);
+          await addPositionToNetwork(pos.Position, option);
       
           const list = findEquForPosition(pos, EquipmentsByFloor, distance_pos_lum);
           console.log("Equipments found for position:", list);
           
          if (list !== undefined) {
-            //await addEquipementsToPositon(list, pos.Position, option);
+            await addEquipementsToPositon(list, pos.Position, option);
             console.log("adding equipment list to position",pos.Position.name.get())
           } else {
             console.log(
@@ -57,4 +57,5 @@ export async function hardwarecontexteGeneration(PosContextName, PosCategoryName
         }
       }
       
-}
+}*/
+
