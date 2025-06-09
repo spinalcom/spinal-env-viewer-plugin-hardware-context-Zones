@@ -111,33 +111,20 @@ type EquipementInfo = {
 
 export async function getFloorEquipments(
   listOfGateways: SpinalNodeRef[],
-  floorName: string
-): Promise<EquipementInfo[]> {
-  const EquipmentsList: EquipementInfo[] = [];
-  console.log("before loop list des luminaires")
+  floorName: string,
+): Promise<SpinalNodeRef[]> {
+  const EquipmentsList: SpinalNodeRef[] = [];
+
   for (const equ of listOfGateways) {
-    const equiInfo: EquipementInfo = {
-      Equipement: equ,
-      Coordinates: null  
-    };
+   
     const parents: SpinalNodeRef[] = await SpinalGraphService.getParents(equ.id.get(), ["hasBimObject"]);
     const roomParent = parents.find(elt => elt.type.get() === "geographicRoom");
-    console.log("room found",roomParent)
+    
     if (roomParent) {
       const floorParents: SpinalNodeRef[] = await SpinalGraphService.getParents(roomParent.id.get(), ["hasGeographicRoom"]);
-      const floorParent = floorParents.find(elt => elt.type.get() === "geographicFloor" && elt.name.get() ===floorName);
-      console.log("floor found",floorParent)
-      console.log("floorName",floorName)
-      if (floorParent) {
-        console.log("second floor verification ")
-        const RealNode = await SpinalGraphService.getRealNode(equ.id.get());
-        const attributes = await serviceDocumentation.getAttributesByCategory(RealNode, "Spatial", "XYZ center");
-
-        // Vérifie que 'attributes' contient au moins un élément
-        equiInfo.Coordinates = attributes[0] || null; 
-
-        EquipmentsList.push(equiInfo);
-        console.log("equipement pushed")
+      const floorParent = floorParents.find(elt => elt.type.get() === "geographicFloor" && elt.name.get() ===floorName); 
+      if (floorParent) { 
+        EquipmentsList.push(equ);    
       }
     }
   }
@@ -402,34 +389,15 @@ export async function matchBIMandBMSGateways(
   floorname: string
 ): Promise<{ bim: SpinalNodeRef; bms: SpinalNodeRef }[]> {
   const matchingGateways: { bim: SpinalNodeRef; bms: SpinalNodeRef }[] = [];
-  const filteredBimByFloor: SpinalNodeRef[] = [];
+  
 
   if (bimList.length === 0 || bmsList.length === 0) {
     return []; // Return empty if either list is empty
   }
 
   // Filter BIM objects
-  for (const bim of bimList) {
-    try {
-      const parents: SpinalNodeRef[] = await SpinalGraphService.getParents(bim.id.get(), ["hasBimObject"]);
-      if (parents.length === 0) continue;
-
-      const room: SpinalNodeRef = parents.find(elt => elt.type.get() === "geographicRoom");
-      if (!room) continue;
-
-      const floorParents: SpinalNodeRef[] = await SpinalGraphService.getParents(room.id.get(), ["hasGeographicRoom"]);
-      const floorParent: SpinalNodeRef = floorParents.find(
-        elt => elt.type.get() === "geographicFloor" && elt.name.get() === floorname
-      );
-
-      if (floorParent) {
-        filteredBimByFloor.push(bim);
-      }
-    } catch (error) {
-      console.error("Error while filtering BIM objects by floor:", error);
-      continue;
-    }
-  }
+ 
+  const filteredBimByFloor= await  getFloorEquipments(bimList, floorname);
 
   if (filteredBimByFloor.length === 0) {
     return []; // No BIM objects match the specified floor
@@ -439,14 +407,14 @@ export async function matchBIMandBMSGateways(
   // Match filtered BIM objects with BMS objects
   for (const bms of bmsList) {
     try {
-      const bmsAttribute = bms.name.get(); // Attribute from BMS object
+      const bmsAttribute = bms.server.address.get(); // Attribute from BMS object
 
       for (const bim of filteredBimByFloor) {
         const realNode = await SpinalGraphService.getRealNode(bim.id.get());
         const bimAttribute = await serviceDocumentation.findOneAttributeInCategory(
           realNode,
           "OPC Attributes",
-          "LO_TableauELE"
+          "Ip Address"
         );
 
         if (bimAttribute!=-1) {
